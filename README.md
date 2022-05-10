@@ -1,12 +1,21 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May 10 10:33:32 2022
+Credits: Tutorial by federicocotogno
+@author: janelle
+"""
+
+
+#Credits: Followed Tutorial from https://github.com/federicocotogno/te...
 # Customer-Service-Bot
-Potential Broil King Customer Service Bot
+#Potential Broil King Customer Service Bot
 import re
 
 import long_responses as long
 #ca
-def message_probability(user_message, recognized_words, single_response=False, required_words=()):
+def message_probability(user_message, recognized_words, single_resp=False, req_words=()):
     message_certainty = 0
-    has_required_words = True
+    has_req_words = True
     
     #counts how many words are in each message (would this mean how many )
     for word in user_message:
@@ -17,12 +26,12 @@ def message_probability(user_message, recognized_words, single_response=False, r
     percentage = float(message_certainty) / float(len(recognized_words))
     
     #avoids sending the wrong message if the recognized words are not in the sentence
-    for word in required_words:
+    for word in req_words:
         if word not in user_message:
-            has_required_words = False 
+            has_req_words = False 
             break
     
-    if has_required_words or single_response:
+    if has_req_words or single_resp:
         return int(percentage*100)
     else:
         return 0
@@ -30,22 +39,9 @@ def message_probability(user_message, recognized_words, single_response=False, r
 def check_all_messages(message):
     highest_prob_list = {}
     
-    def response(bot_response, list_of_words, single_response=False, required_words=[]):
-        nonlocal highest_prob_list
-        highest_prob_list[bot_response] = message_probability(message, list_of_words, single_response, required_words)
-    #response---------------------------------------------------------------------------------------------------------
-    response('Hello, I am a customer service bot. What can I help you with today?', ['hello', 'hi', 'good morning' ], single_response=True)
-    response('My pleasure, thank you for chatting with Onward!', [ 'thank', 'you', 'helpful', 'nice', 'ok' ], single_response=True)
-    response('Sadly, we do not sell BBQs, we only deal wiht warranty and purchases here!', ['buy', 'purchase','bbq', 'get' ], required_words= ['buy'])
-    response('Would this item be under warranty or a purchase item?', ['parts', 'burners', 'flav r waves', 'grids', 'lid', 'wheels'], single_response=True)
-    response('I am afraid our warranty policy does not include returns.', ['refund','refunds', 'new', 'get', 'BBQ', 'give'], single_response=True)
-    response(long.R_CONV, ['conversion', 'natural gas', 'propane', 'from', 'kit'], required_words=['conversion'])
-    response(long.R_HUMAN, ['human', 'someone', 'speak', 'person'], single_response=True)
-    response(long.R_EXT_WARR, ['warranty', 'have', 'check'], required_words=[ 'warranty'])   
-    response(long.R_CASH, ['buy', 'purchase', 'parts'], single_response=True)
     
-    
-    import random
+
+import random
 
 
 #long repsosnes-----------------------------------------------------------------------------------------------------------------------
@@ -60,6 +56,24 @@ def unknown():
                 'Could you please rephrase that?', 
                 'I am afraid I can not help you, please call the 1-800-265-2150 for assistance!'][random.randrange(3)]
     return response
+    
+    
+
+    def response(bot_resp, list_of_words, single_resp=False, req_words=[]):
+        nonlocal highest_prob_list
+        highest_prob_list[bot_resp] = message_probability(message, list_of_words, single_resp, req_words)
+    #response---------------------------------------------------------------------------------------------------------
+    response('Hello, I am a customer service bot. What can I help you with today?', ['hello', 'hi', 'good morning' ], single_resp=True)
+    response('My pleasure, thank you for chatting with Onward!', [ 'thank', 'you', 'helpful', 'nice', 'ok' ], single_resp=True)
+    response('Sadly, we do not sell BBQs, we only deal wiht warranty and purchases here!', ['buy', 'purchase','bbq', 'get' ], req_words= ['buy'])
+    response('Would this item be under warranty or a purchase item?', ['parts', 'burners', 'flav r waves', 'grids', 'lid', 'wheels'], single_resp=True)
+    response('I am afraid our warranty policy does not include returns.', ['refund','refunds', 'new', 'get', 'BBQ', 'give'], single_resp=True)
+    response(long.R_CONV, ['conversion', 'natural gas', 'propane', 'from', 'kit'], req_words=['conversion'])
+    response(long.R_HUMAN, ['human', 'someone', 'speak', 'person'], single_resp=True)
+    response(long.R_EXT_WARR, ['warranty', 'have', 'check'], req_words=[ 'warranty'])   
+    response(long.R_CASH, ['buy', 'purchase', 'parts'], single_resp=True)
+    
+    
     
     best_match = max(highest_prob_list, key=highest_prob_list.get)
     #print(highest_prob_list)
